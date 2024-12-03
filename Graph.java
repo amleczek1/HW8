@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Adrian Mleczek/001
  *
  *   Note, additional comments provided throughout this source code
  *   is for educational purposes
@@ -105,6 +105,33 @@ public class Graph {
   public int findRoot() {
 
     // ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME/SECTION AT TOP OF FILE
-    return -1;
+    //default root value
+    int rootVal = -1;
+    //array to store number of incoming edges
+    int[] numEdge = new int[numVertices];
+    //populate said array
+    for(int i =0; i<numVertices;i++)
+    {
+        for(Integer r : adjListArr[i])
+        {
+            numEdge[r]++;
+        }
+    }
+    //if # of incoming edges = 0, must be a root
+    for(int i =0; i<numVertices;i++)
+    {
+        if(numEdge[i]==0)
+            {
+                //in case there are muliple roots
+                if(rootVal != -1)
+                {
+                    return -1;
+                }
+                //sets rootVal to, well, the root value....
+                rootVal = vertexValues.get(i);
+            }
+    }
+    //returns the root value!!!!!
+    return rootVal;
   } 
 }
