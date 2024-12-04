@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   ADD YOUR NAME / SECTION NUMBER HERE
+ *   Adrian Mleczek/001
  *
  *   This java file contains the problem solutions of canFinish and
  *   numGroups methods.
@@ -76,13 +76,55 @@ class ProblemSolutions {
                              int[][] prerequisites) {
       
         int numNodes = numExams;  // # of nodes in graph
-
+        //keeps track of how many edges inbound/point to each vertex
+        int[] pointedAt = new int[numExams];
+        
         // Build directed graph's adjacency list
-        ArrayList<Integer>[] adj = getAdjList(numExams, 
-                                        prerequisites); 
-
-        // ADD YOUR CODE HERE - ADD YOUR NAME / SECTION AT TOP OF FILE
-        return false;
+        ArrayList<Integer>[] adj = getAdjList(numExams,prerequisites);
+        // populates adj and pointedAt
+        for(int[] prereq : prerequisites)
+        {
+            int course = prereq[0];
+            int req = prereq[1];
+            adj[req].add(course);
+            pointedAt[course]++;
+        }
+        
+        //queue to keep track of which course are possible to take
+        Queue<Integer> queue = new LinkedList<>();
+        for(int i = 0; i< numExams;i++)
+        {
+            //start with courses with no prereqs, because those can be taken:)
+            if(pointedAt[i]==0)
+            {
+                queue.offer(i);
+            }
+        }
+        
+        //BFS
+        int finishedCourses = 0;
+        while(queue.isEmpty()==false)
+        {
+            int course = queue.poll();
+            finishedCourses++;
+            //go to next and decrease its pointedAT, as a prereq was taken
+            for(int next : adj[course])
+            {
+                pointedAt[next]--;
+                //can be processed on the queue if at 0
+                if(pointedAt[next]==0)
+                {
+                    queue.offer(next);
+                }
+            }
+                
+        }
+        
+        
+        
+        
+        
+        return finishedCourses == numExams;
 
     }
 
@@ -167,6 +209,8 @@ class ProblemSolutions {
         int numNodes = adjMatrix.length;
         Map<Integer,List<Integer>> graph = new HashMap();
         int i = 0, j =0;
+        boolean[] done = new boolean[numNodes];
+        int count = 0;
 
         /*
          * Converting the Graph Adjacency Matrix to
@@ -192,7 +236,42 @@ class ProblemSolutions {
 
         // YOUR CODE GOES HERE - you can add helper methods, you do not need
         // to put all code in this method.
-        return -1;
+        //DFS
+        for(int z = 0; z < numNodes; z++)
+        {
+            //if not done, it is a new group
+            if(!done[z])
+            {
+                //notes that there is a new group
+                count++;
+                //this method will visit connected nodes and mark them done,
+                //so that these components aren't flagged as a new group
+                dfsHelper(z, graph, done);
+            }
+        }
+        return count;
+    }
+    
+    private void dfsHelper(int node, Map<Integer,List<Integer>> graph, boolean[]done)
+    {
+        //creates a stack
+       Stack<Integer> stack = new Stack<>();
+       stack.push(node);
+       while(stack.isEmpty()==false)
+       {
+           //removes node and marks it done
+           int curr = stack.pop();        
+           done[curr]=true;
+           //checks if the next node is done
+           for(int next:graph.getOrDefault(curr, new ArrayList<>()))
+           {
+               //if not done, puts on stack
+               if(done[next]==false)
+               {
+                   stack.push(next);
+               }
+           }
+       }
     }
 
 }
